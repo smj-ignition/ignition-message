@@ -31,7 +31,7 @@ TIME_SLOTS.forEach((slot) => {
     const rph = getRph(line);
     replacements[`\${l-${line}-r-${slot}}`] = rph.toLocaleString("en-TT");
     replacements[`\${l-${line}-a-${slot}}`] = rph.toLocaleString("en-TT");
-    replacements[`\${l-${line}-e-${slot}}`] = "100";
+    replacements[`\${l-${line}-e-${slot}}`] = "100%";
   }
 });
 
@@ -41,13 +41,13 @@ for (const line of Object.keys(LINE_COLS)) {
   const s2  = rph * 12;
   replacements[`\${l-${line}-r-s1}`] = s1.toLocaleString("en-TT");
   replacements[`\${l-${line}-a-s1}`] = s1.toLocaleString("en-TT");
-  replacements[`\${l-${line}-e-s1}`] = "100";
+  replacements[`\${l-${line}-e-s1}`] = "100%";
   replacements[`\${l-${line}-r-s2}`] = s2.toLocaleString("en-TT");
   replacements[`\${l-${line}-a-s2}`] = s2.toLocaleString("en-TT");
-  replacements[`\${l-${line}-e-s2}`] = "100";
+  replacements[`\${l-${line}-e-s2}`] = "100%";
   replacements[`\${l-${line}-r-d}`]  = (s1 + s2).toLocaleString("en-TT");
   replacements[`\${l-${line}-a-d}`]  = (s1 + s2).toLocaleString("en-TT");
-  replacements[`\${l-${line}-e-d}`]  = "100";
+  replacements[`\${l-${line}-e-d}`]  = "100%";
 }
 
 for (const line of LINE_NUMS) {

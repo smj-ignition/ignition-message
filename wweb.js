@@ -590,17 +590,18 @@ fastify.post(
       const getSku   = (line) => {
         const j = lineJobs[line];
         if (!j) return "-";
-        const sku = [j.Part_CommercialBrand, j.Part_CommercialSize1, j.Part_CommercialSize2, j.Part_CommercialColor]
-          .filter(Boolean).join(" ").replace(/X/g, "×");
+        const brandColor = [j.Part_CommercialBrand, j.Part_CommercialColor].filter(Boolean).join(" ");
+        const sizes      = [j.Part_CommercialSize1,  j.Part_CommercialSize2].filter(Boolean).join(" ");
+        const sku = [brandColor, sizes].filter(Boolean).join("<br>").replace(/X/g, "×");
         return sku || "-";
       };
 
       const totalRatedPerHour = LINE_NUMS.reduce((sum, line) => sum + getRated(line), 0);
 
       const eff = (actual, rated) =>
-        rated > 0 ? Math.round((actual / rated) * 100).toLocaleString("en-TT") : "";
+        rated > 0 ? Math.round((actual / rated) * 100).toLocaleString("en-TT") + "%" : "";
 
-      // Determine which TIME_SLOTS index is currently active (Trinidad timezone).
+      // The script runs ~2 min past each hour reporting the *just-completed* hour.
       // Shift day runs 7am–7am: hours 7–23 → slots 0–16, hours 0–6 → slots 17–23.
       const nowHour = new Date().toLocaleString("en-TT", {
         timeZone: "America/Port_of_Spain",
@@ -608,7 +609,8 @@ fastify.post(
         hour12: false,
       });
       const currentHour = parseInt(nowHour, 10);
-      const currentSlotIndex = currentHour >= 7 ? currentHour - 7 : currentHour + 17;
+      const lastHour = currentHour === 0 ? 23 : currentHour - 1;
+      const currentSlotIndex = lastHour >= 7 ? lastHour - 7 : lastHour + 17;
 
       const replacements = {};
 

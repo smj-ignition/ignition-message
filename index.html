@@ -20,6 +20,7 @@
       table {
         border-collapse: collapse;
         width: 100%;
+        table-layout: fixed;
         font-size: 14px;
         text-align: center;
       }
@@ -29,6 +30,12 @@
         padding: 6px;
         background-color: #fff;
         color: #000;
+      }
+      th {
+        word-break: break-word;
+      }
+      td:first-child {
+        white-space: nowrap;
       }
       .header {
         background-color: #d0e0f0;
@@ -54,6 +61,10 @@
   </head>
   <body>
     <table>
+      <colgroup>
+        <col style="width: 165px" />
+        <col span="18" />
+      </colgroup>
       <thead>
         <tr>
           <th colspan="1" rowspan="4" class="header">
@@ -67,7 +78,7 @@
           </th>
           <th colspan="15" class="header">Daily Productivity Tracker</th>
 
-          <th colspan="5" class="header" id="report-gen-shift-date"></th>
+          <th colspan="3" class="header" id="report-gen-shift-date"></th>
         </tr>
         <tr>
           <th colspan="3" class="header">Line 2</th>
@@ -75,7 +86,7 @@
           <th colspan="3" class="header">Line 4</th>
           <th colspan="3" class="header">Line 5</th>
           <th colspan="3" class="header">Line 6</th>
-          <th colspan="4" rowspan="2" class="header">Total</th>
+          <th colspan="3" rowspan="2" class="header">Total</th>
         </tr>
         <tr>
           <th colspan="3" id="line-2-sku">${line-2-sku}</th>
