@@ -445,54 +445,6 @@ fastify.post(
   }
 );
 
-fastify.post(
-  "/sendHourlyProductionUpdateToWhatsAppGroup",
-  async function handler(request, reply) {
-    const groupToSendReportTo = "120363417974970246@g.us";
-    const {
-      one_hour_prior_actual_count_line_2, one_hour_prior_actual_count_line_3,
-      one_hour_prior_actual_count_line_4, one_hour_prior_actual_count_line_5,
-      one_hour_prior_actual_count_line_6,
-      current_count_line_2, current_count_line_3, current_count_line_4,
-      current_count_line_5, current_count_line_6,
-    } = request.body;
-
-    try {
-      const padWidth = 10;
-      const formatNumber = (n) => String(n).padStart(padWidth, " ");
-
-      const message = `
-  [Spark - ${new Date().toLocaleString()}]
-
-  Line 2
-    Past Hour:\t${formatNumber(one_hour_prior_actual_count_line_2)} cs
-    Current Count:\t${formatNumber(current_count_line_2)} cs
-
-  Line 3
-    Past Hour:\t${formatNumber(one_hour_prior_actual_count_line_3)} cs
-    Current Count:\t${formatNumber(current_count_line_3)} cs
-
-  Line 4
-    Past Hour:\t${formatNumber(one_hour_prior_actual_count_line_4)} cs
-    Current Count:\t${formatNumber(current_count_line_4)} cs
-
-  Line 5
-    Past Hour:\t${formatNumber(one_hour_prior_actual_count_line_5)} cs
-    Current Count:\t${formatNumber(current_count_line_5)} cs
-
-  Line 6
-    Past Hour:\t${formatNumber(one_hour_prior_actual_count_line_6)} cs
-    Current Count:\t${formatNumber(current_count_line_6)} cs
-  `;
-
-      console.log("Sending hourly production update to group:", groupToSendReportTo);
-      await client.sendMessage(groupToSendReportTo, message);
-      return { hello: "world" };
-    } catch (err) {
-      console.error(err);
-    }
-  }
-);
 
 fastify.post(
   "/sendProductivityUpdateToWhatsAppGroup",
