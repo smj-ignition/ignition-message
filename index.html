@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daily Productivity Tracker</title>
+
+    <link rel="stylesheet" href="./index.css" />
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+</style>
+
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+      
+      html * {
+        font-family: "Roboto" !important;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 14px;
+        text-align: center;
+      }
+      th,
+      td {
+        border: 1px solid #aaa;
+        padding: 6px;
+      }
+      .header {
+        background-color: #d0e0f0;
+      }
+      .total-header {
+        background-color: #f0f0f0;
+        font-weight: bold;
+      }
+      .green {
+        color: #006100;
+        background-color: #c6efce;
+      }
+      .yellow {
+        color: #9c6500;
+        background-color: #ffeb9c;
+      }
+      .red {
+        color: #9c0006;
+        background-color: #ffc7ce;
+      }
+    </style>
+  </head>
+  <body>
+    <table>
+      <thead>
+        <tr>
+          <th colspan="1" rowspan="4" class="header">
+            <img
+              style="display: inline"
+              width="px"
+              height="50px"
+              src="https://www.smjaleel.net/wp-content/uploads/2023/06/SMJ-logo_FAW.png"
+              alt=""
+            />
+          </th>
+          <th colspan="15" class="header">Daily Productivity Tracker</th>
+
+          <th colspan="5" class="header" id="report-gen-shift-date"></th>
+        </tr>
+        <tr>
+          <th colspan="3" class="header">Line 2</th>
+          <th colspan="3" class="header">Line 3</th>
+          <th colspan="3" class="header">Line 4</th>
+          <th colspan="3" class="header">Line 5</th>
+          <th colspan="3" class="header">Line 6</th>
+          <th colspan="4" rowspan="2" class="header">Total</th>
+        </tr>
+        <tr>
+          <th colspan="3" id="line-2-sku"> </th>
+          <th colspan="3" id="line-3-sku"> </th>
+          <th colspan="3" id="line-4-sku"> </th>
+          <th colspan="3" id="line-5-sku"> </th>
+          <th colspan="3" id="line-6-sku"> </th>
+        </tr>
+        <tr>
+          <th>Rated</th>
+          <th>Actual</th>
+          <th>%</th>
+          <th>Rated</th>
+          <th>Actual</th>
+          <th>%</th>
+          <th>Rated</th>
+          <th>Actual</th>
+          <th>%</th>
+          <th>Rated</th>
+          <th>Actual</th>
+          <th>%</th>
+          <th>Rated</th>
+          <th>Actual</th>
+          <th>%</th>
+          <th>Rated</th>
+          <th>Actual</th>
+          <th>%</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>07:00 am - 08:00 am</td>
+          <td id="l-2-r-7am-8am">${l-2-r-7am-8am}</td>
+          <td id="l-2-a-7am-8am">${l-2-a-7am-8am}</td>
+          <td id="l-2-e-7am-8am">${l-2-e-7am-8am}</td>
+          <td id="l-3-r-7am-8am">${l-3-r-7am-8am}</td>
+          <td id="l-3-a-7am-8am">${l-3-a-7am-8am}</td>
+          <td id="l-3-e-7am-8am">${l-3-e-7am-8am}</td>
+          <td id="l-4-r-7am-8am">${l-4-r-7am-8am}</td>
+          <td id="l-4-a-7am-8am">${l-4-a-7am-8am}</td>
+          <td id="l-4-e-7am-8am">${l-4-e-7am-8am}</td>
+          <td id="l-5-r-7am-8am">${l-5-r-7am-8am}</td>
+          <td id="l-5-a-7am-8am">${l-5-a-7am-8am}</td>
+          <td id="l-5-e-7am-8am">${l-5-e-7am-8am}</td>
+          <td id="l-6-r-7am-8am">${l-6-r-7am-8am}</td>
+          <td id="l-6-a-7am-8am">${l-6-a-7am-8am}</td>
+          <td id="l-6-e-7am-8am">${l-6-e-7am-8am}</td>
+          <td id="l-a-r-7am-8am">${l-a-r-7am-8am}</td>
+          <td id="l-a-a-7am-8am">${l-a-a-7am-8am}</td>
+          <td id="l-a-e-7am-8am">${l-a-e-7am-8am}</td>
+        </tr>
+        <tr>
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>08:00 am - 09:00 am</td>
+          <td id="l-2-r-8am-9am">${l-2-r-8am-9am}</td>
+          <td id="l-2-a-8am-9am">${l-2-a-8am-9am}</td>
+          <td id="l-2-e-8am-9am">${l-2-e-8am-9am}</td>
+          <td id="l-3-r-8am-9am">${l-3-r-8am-9am}</td>
+          <td id="l-3-a-8am-9am">${l-3-a-8am-9am}</td>
+          <td id="l-3-e-8am-9am">${l-3-e-8am-9am}</td>
+          <td id="l-4-r-8am-9am">${l-4-r-8am-9am}</td>
+          <td id="l-4-a-8am-9am">${l-4-a-8am-9am}</td>
+          <td id="l-4-e-8am-9am">${l-4-e-8am-9am}</td>
+          <td id="l-5-r-8am-9am">${l-5-r-8am-9am}</td>
+          <td id="l-5-a-8am-9am">${l-5-a-8am-9am}</td>
+          <td id="l-5-e-8am-9am">${l-5-e-8am-9am}</td>
+          <td id="l-6-r-8am-9am">${l-6-r-8am-9am}</td>
+          <td id="l-6-a-8am-9am">${l-6-a-8am-9am}</td>
+          <td id="l-6-e-8am-9am">${l-6-e-8am-9am}</td>
+          <td id="l-a-r-8am-9am">${l-a-r-8am-9am}</td>
+          <td id="l-a-a-8am-9am">${l-a-a-8am-9am}</td>
+          <td id="l-a-e-8am-9am">${l-a-e-8am-9am}</td>
+        </tr>
+        <tr>
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>09:00 am - 10:00 am</td>
+          <td id="l-2-r-9am-10am">${l-2-r-9am-10am}</td>
+          <td id="l-2-a-9am-10am">${l-2-a-9am-10am}</td>
+          <td id="l-2-e-9am-10am">${l-2-e-9am-10am}</td>
+          <td id="l-3-r-9am-10am">${l-3-r-9am-10am}</td>
+          <td id="l-3-a-9am-10am">${l-3-a-9am-10am}</td>
+          <td id="l-3-e-9am-10am">${l-3-e-9am-10am}</td>
+          <td id="l-4-r-9am-10am">${l-4-r-9am-10am}</td>
+          <td id="l-4-a-9am-10am">${l-4-a-9am-10am}</td>
+          <td id="l-4-e-9am-10am">${l-4-e-9am-10am}</td>
+          <td id="l-5-r-9am-10am">${l-5-r-9am-10am}</td>
+          <td id="l-5-a-9am-10am">${l-5-a-9am-10am}</td>
+          <td id="l-5-e-9am-10am">${l-5-e-9am-10am}</td>
+          <td id="l-6-r-9am-10am">${l-6-r-9am-10am}</td>
+          <td id="l-6-a-9am-10am">${l-6-a-9am-10am}</td>
+          <td id="l-6-e-9am-10am">${l-6-e-9am-10am}</td>
+          <td id="l-a-r-9am-10am">${l-a-r-9am-10am}</td>
+          <td id="l-a-a-9am-10am">${l-a-a-9am-10am}</td>
+          <td id="l-a-e-9am-10am">${l-a-e-9am-10am}</td>
+        </tr>
+        <tr>
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>10:00 am - 11:00 am</td>
+          <td id="l-2-r-10am-11am">${l-2-r-10am-11am}</td>
+          <td id="l-2-a-10am-11am">${l-2-a-10am-11am}</td>
+          <td id="l-2-e-10am-11am">${l-2-e-10am-11am}</td>
+          <td id="l-3-r-10am-11am">${l-3-r-10am-11am}</td>
+          <td id="l-3-a-10am-11am">${l-3-a-10am-11am}</td>
+          <td id="l-3-e-10am-11am">${l-3-e-10am-11am}</td>
+          <td id="l-4-r-10am-11am">${l-4-r-10am-11am}</td>
+          <td id="l-4-a-10am-11am">${l-4-a-10am-11am}</td>
+          <td id="l-4-e-10am-11am">${l-4-e-10am-11am}</td>
+          <td id="l-5-r-10am-11am">${l-5-r-10am-11am}</td>
+          <td id="l-5-a-10am-11am">${l-5-a-10am-11am}</td>
+          <td id="l-5-e-10am-11am">${l-5-e-10am-11am}</td>
+          <td id="l-6-r-10am-11am">${l-6-r-10am-11am}</td>
+          <td id="l-6-a-10am-11am">${l-6-a-10am-11am}</td>
+          <td id="l-6-e-10am-11am">${l-6-e-10am-11am}</td>
+          <td id="l-a-r-10am-11am">${l-a-r-10am-11am}</td>
+          <td id="l-a-a-10am-11am">${l-a-a-10am-11am}</td>
+          <td id="l-a-e-10am-11am">${l-a-e-10am-11am}</td>
+        </tr>
+        <tr>
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>11:00 am - 12:00 pm</td>
+          <td id="l-2-r-11am-12pm">${l-2-r-11am-12pm}</td>
+          <td id="l-2-a-11am-12pm">${l-2-a-11am-12pm}</td>
+          <td id="l-2-e-11am-12pm">${l-2-e-11am-12pm}</td>
+          <td id="l-3-r-11am-12pm">${l-3-r-11am-12pm}</td>
+          <td id="l-3-a-11am-12pm">${l-3-a-11am-12pm}</td>
+          <td id="l-3-e-11am-12pm">${l-3-e-11am-12pm}</td>
+          <td id="l-4-r-11am-12pm">${l-4-r-11am-12pm}</td>
+          <td id="l-4-a-11am-12pm">${l-4-a-11am-12pm}</td>
+          <td id="l-4-e-11am-12pm">${l-4-e-11am-12pm}</td>
+          <td id="l-5-r-11am-12pm">${l-5-r-11am-12pm}</td>
+          <td id="l-5-a-11am-12pm">${l-5-a-11am-12pm}</td>
+          <td id="l-5-e-11am-12pm">${l-5-e-11am-12pm}</td>
+          <td id="l-6-r-11am-12pm">${l-6-r-11am-12pm}</td>
+          <td id="l-6-a-11am-12pm">${l-6-a-11am-12pm}</td>
+          <td id="l-6-e-11am-12pm">${l-6-e-11am-12pm}</td>
+          <td id="l-a-r-11am-12pm">${l-a-r-11am-12pm}</td>
+          <td id="l-a-a-11am-12pm">${l-a-a-11am-12pm}</td>
+          <td id="l-a-e-11am-12pm">${l-a-e-11am-12pm}</td>
+        </tr>
+
+        <tr>
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>12:00 pm - 01:00 pm</td>
+          <td id="l-2-r-12pm-1pm">${l-2-r-12pm-1pm}</td>
+          <td id="l-2-a-12pm-1pm">${l-2-a-12pm-1pm}</td>
+          <td id="l-2-e-12pm-1pm">${l-2-e-12pm-1pm}</td>
+          <td id="l-3-r-12pm-1pm">${l-3-r-12pm-1pm}</td>
+          <td id="l-3-a-12pm-1pm">${l-3-a-12pm-1pm}</td>
+          <td id="l-3-e-12pm-1pm">${l-3-e-12pm-1pm}</td>
+          <td id="l-4-r-12pm-1pm">${l-4-r-12pm-1pm}</td>
+          <td id="l-4-a-12pm-1pm">${l-4-a-12pm-1pm}</td>
+          <td id="l-4-e-12pm-1pm">${l-4-e-12pm-1pm}</td>
+          <td id="l-5-r-12pm-1pm">${l-5-r-12pm-1pm}</td>
+          <td id="l-5-a-12pm-1pm">${l-5-a-12pm-1pm}</td>
+          <td id="l-5-e-12pm-1pm">${l-5-e-12pm-1pm}</td>
+          <td id="l-6-r-12pm-1pm">${l-6-r-12pm-1pm}</td>
+          <td id="l-6-a-12pm-1pm">${l-6-a-12pm-1pm}</td>
+          <td id="l-6-e-12pm-1pm">${l-6-e-12pm-1pm}</td>
+          <td id="l-a-r-12pm-1pm">${l-a-r-12pm-1pm}</td>
+          <td id="l-a-a-12pm-1pm">${l-a-a-12pm-1pm}</td>
+          <td id="l-a-e-12pm-1pm">${l-a-e-12pm-1pm}</td>
+        </tr>
+        <tr>
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>01:00 pm - 02:00 pm</td>
+          <td id="l-2-r-1pm-2pm">${l-2-r-1pm-2pm}</td>
+          <td id="l-2-a-1pm-2pm">${l-2-a-1pm-2pm}</td>
+          <td id="l-2-e-1pm-2pm">${l-2-e-1pm-2pm}</td>
+          <td id="l-3-r-1pm-2pm">${l-3-r-1pm-2pm}</td>
+          <td id="l-3-a-1pm-2pm">${l-3-a-1pm-2pm}</td>
+          <td id="l-3-e-1pm-2pm">${l-3-e-1pm-2pm}</td>
+          <td id="l-4-r-1pm-2pm">${l-4-r-1pm-2pm}</td>
+          <td id="l-4-a-1pm-2pm">${l-4-a-1pm-2pm}</td>
+          <td id="l-4-e-1pm-2pm">${l-4-e-1pm-2pm}</td>
+          <td id="l-5-r-1pm-2pm">${l-5-r-1pm-2pm}</td>
+          <td id="l-5-a-1pm-2pm">${l-5-a-1pm-2pm}</td>
+          <td id="l-5-e-1pm-2pm">${l-5-e-1pm-2pm}</td>
+          <td id="l-6-r-1pm-2pm">${l-6-r-1pm-2pm}</td>
+          <td id="l-6-a-1pm-2pm">${l-6-a-1pm-2pm}</td>
+          <td id="l-6-e-1pm-2pm">${l-6-e-1pm-2pm}</td>
+          <td id="l-a-r-1pm-2pm">${l-a-r-1pm-2pm}</td>
+          <td id="l-a-a-1pm-2pm">${l-a-a-1pm-2pm}</td>
+          <td id="l-a-e-1pm-2pm">${l-a-e-1pm-2pm}</td>
+        </tr>
+
+        <tr>
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>02:00 pm - 03:00 pm</td>
+          <td id="l-2-r-2pm-3pm">${l-2-r-2pm-3pm}</td>
+          <td id="l-2-a-2pm-3pm">${l-2-a-2pm-3pm}</td>
+          <td id="l-2-e-2pm-3pm">${l-2-e-2pm-3pm}</td>
+          <td id="l-3-r-2pm-3pm">${l-3-r-2pm-3pm}</td>
+          <td id="l-3-a-2pm-3pm">${l-3-a-2pm-3pm}</td>
+          <td id="l-3-e-2pm-3pm">${l-3-e-2pm-3pm}</td>
+          <td id="l-4-r-2pm-3pm">${l-4-r-2pm-3pm}</td>
+          <td id="l-4-a-2pm-3pm">${l-4-a-2pm-3pm}</td>
+          <td id="l-4-e-2pm-3pm">${l-4-e-2pm-3pm}</td>
+          <td id="l-5-r-2pm-3pm">${l-5-r-2pm-3pm}</td>
+          <td id="l-5-a-2pm-3pm">${l-5-a-2pm-3pm}</td>
+          <td id="l-5-e-2pm-3pm">${l-5-e-2pm-3pm}</td>
+          <td id="l-6-r-2pm-3pm">${l-6-r-2pm-3pm}</td>
+          <td id="l-6-a-2pm-3pm">${l-6-a-2pm-3pm}</td>
+          <td id="l-6-e-2pm-3pm">${l-6-e-2pm-3pm}</td>
+          <td id="l-a-r-2pm-3pm">${l-a-r-2pm-3pm}</td>
+          <td id="l-a-a-2pm-3pm">${l-a-a-2pm-3pm}</td>
+          <td id="l-a-e-2pm-3pm">${l-a-e-2pm-3pm}</td>
+        </tr>
+        <tr>
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>03:00 pm - 04:00 pm</td>
+          <td id="l-2-r-3pm-4pm">${l-2-r-3pm-4pm}</td>
+          <td id="l-2-a-3pm-4pm">${l-2-a-3pm-4pm}</td>
+          <td id="l-2-e-3pm-4pm">${l-2-e-3pm-4pm}</td>
+          <td id="l-3-r-3pm-4pm">${l-3-r-3pm-4pm}</td>
+          <td id="l-3-a-3pm-4pm">${l-3-a-3pm-4pm}</td>
+          <td id="l-3-e-3pm-4pm">${l-3-e-3pm-4pm}</td>
+          <td id="l-4-r-3pm-4pm">${l-4-r-3pm-4pm}</td>
+          <td id="l-4-a-3pm-4pm">${l-4-a-3pm-4pm}</td>
+          <td id="l-4-e-3pm-4pm">${l-4-e-3pm-4pm}</td>
+          <td id="l-5-r-3pm-4pm">${l-5-r-3pm-4pm}</td>
+          <td id="l-5-a-3pm-4pm">${l-5-a-3pm-4pm}</td>
+          <td id="l-5-e-3pm-4pm">${l-5-e-3pm-4pm}</td>
+          <td id="l-6-r-3pm-4pm">${l-6-r-3pm-4pm}</td>
+          <td id="l-6-a-3pm-4pm">${l-6-a-3pm-4pm}</td>
+          <td id="l-6-e-3pm-4pm">${l-6-e-3pm-4pm}</td>
+          <td id="l-a-r-3pm-4pm">${l-a-r-3pm-4pm}</td>
+          <td id="l-a-a-3pm-4pm">${l-a-a-3pm-4pm}</td>
+          <td id="l-a-e-3pm-4pm">${l-a-e-3pm-4pm}</td>
+        </tr>
+        <tr>
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>04:00 pm - 05:00 pm</td>
+          <td id="l-2-r-4pm-5pm">${l-2-r-4pm-5pm}</td>
+          <td id="l-2-a-4pm-5pm">${l-2-a-4pm-5pm}</td>
+          <td id="l-2-e-4pm-5pm">${l-2-e-4pm-5pm}</td>
+          <td id="l-3-r-4pm-5pm">${l-3-r-4pm-5pm}</td>
+          <td id="l-3-a-4pm-5pm">${l-3-a-4pm-5pm}</td>
+          <td id="l-3-e-4pm-5pm">${l-3-e-4pm-5pm}</td>
+          <td id="l-4-r-4pm-5pm">${l-4-r-4pm-5pm}</td>
+          <td id="l-4-a-4pm-5pm">${l-4-a-4pm-5pm}</td>
+          <td id="l-4-e-4pm-5pm">${l-4-e-4pm-5pm}</td>
+          <td id="l-5-r-4pm-5pm">${l-5-r-4pm-5pm}</td>
+          <td id="l-5-a-4pm-5pm">${l-5-a-4pm-5pm}</td>
+          <td id="l-5-e-4pm-5pm">${l-5-e-4pm-5pm}</td>
+          <td id="l-6-r-4pm-5pm">${l-6-r-4pm-5pm}</td>
+          <td id="l-6-a-4pm-5pm">${l-6-a-4pm-5pm}</td>
+          <td id="l-6-e-4pm-5pm">${l-6-e-4pm-5pm}</td>
+          <td id="l-a-r-4pm-5pm">${l-a-r-4pm-5pm}</td>
+          <td id="l-a-a-4pm-5pm">${l-a-a-4pm-5pm}</td>
+          <td id="l-a-e-4pm-5pm">${l-a-e-4pm-5pm}</td>
+        </tr>
+        <tr>
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>05:00 pm - 06:00 pm</td>
+          <td id="l-2-r-5pm-6pm">${l-2-r-5pm-6pm}</td>
+          <td id="l-2-a-5pm-6pm">${l-2-a-5pm-6pm}</td>
+          <td id="l-2-e-5pm-6pm">${l-2-e-5pm-6pm}</td>
+          <td id="l-3-r-5pm-6pm">${l-3-r-5pm-6pm}</td>
+          <td id="l-3-a-5pm-6pm">${l-3-a-5pm-6pm}</td>
+          <td id="l-3-e-5pm-6pm">${l-3-e-5pm-6pm}</td>
+          <td id="l-4-r-5pm-6pm">${l-4-r-5pm-6pm}</td>
+          <td id="l-4-a-5pm-6pm">${l-4-a-5pm-6pm}</td>
+          <td id="l-4-e-5pm-6pm">${l-4-e-5pm-6pm}</td>
+          <td id="l-5-r-5pm-6pm">${l-5-r-5pm-6pm}</td>
+          <td id="l-5-a-5pm-6pm">${l-5-a-5pm-6pm}</td>
+          <td id="l-5-e-5pm-6pm">${l-5-e-5pm-6pm}</td>
+          <td id="l-6-r-5pm-6pm">${l-6-r-5pm-6pm}</td>
+          <td id="l-6-a-5pm-6pm">${l-6-a-5pm-6pm}</td>
+          <td id="l-6-e-5pm-6pm">${l-6-e-5pm-6pm}</td>
+          <td id="l-a-r-5pm-6pm">${l-a-r-5pm-6pm}</td>
+          <td id="l-a-a-5pm-6pm">${l-a-a-5pm-6pm}</td>
+          <td id="l-a-e-5pm-6pm">${l-a-e-5pm-6pm}</td>
+        </tr>
+        <tr>
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>06:00 pm - 07:00 pm</td>
+          <td id="l-2-r-6pm-7pm">${l-2-r-6pm-7pm}</td>
+          <td id="l-2-a-6pm-7pm">${l-2-a-6pm-7pm}</td>
+          <td id="l-2-e-6pm-7pm">${l-2-e-6pm-7pm}</td>
+          <td id="l-3-r-6pm-7pm">${l-3-r-6pm-7pm}</td>
+          <td id="l-3-a-6pm-7pm">${l-3-a-6pm-7pm}</td>
+          <td id="l-3-e-6pm-7pm">${l-3-e-6pm-7pm}</td>
+          <td id="l-4-r-6pm-7pm">${l-4-r-6pm-7pm}</td>
+          <td id="l-4-a-6pm-7pm">${l-4-a-6pm-7pm}</td>
+          <td id="l-4-e-6pm-7pm">${l-4-e-6pm-7pm}</td>
+          <td id="l-5-r-6pm-7pm">${l-5-r-6pm-7pm}</td>
+          <td id="l-5-a-6pm-7pm">${l-5-a-6pm-7pm}</td>
+          <td id="l-5-e-6pm-7pm">${l-5-e-6pm-7pm}</td>
+          <td id="l-6-r-6pm-7pm">${l-6-r-6pm-7pm}</td>
+          <td id="l-6-a-6pm-7pm">${l-6-a-6pm-7pm}</td>
+          <td id="l-6-e-6pm-7pm">${l-6-e-6pm-7pm}</td>
+          <td id="l-a-r-6pm-7pm">${l-a-r-6pm-7pm}</td>
+          <td id="l-a-a-6pm-7pm">${l-a-a-6pm-7pm}</td>
+          <td id="l-a-e-6pm-7pm">${l-a-e-6pm-7pm}</td>
+        </tr>
+        <tr class="total-header">
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>Shift 1 Total</td>
+          <td id="l-2-r-s1">${l-2-r-s1}</td>
+          <td id="l-2-a-s1">${l-2-a-s1}</td>
+          <td id="l-2-e-s1">${l-2-e-s1}</td>
+          <td id="l-3-r-s1">${l-3-r-s1}</td>
+          <td id="l-3-a-s1">${l-3-a-s1}</td>
+          <td id="l-3-e-s1">${l-3-e-s1}</td>
+          <td id="l-4-r-s1">${l-4-r-s1}</td>
+          <td id="l-4-a-s1">${l-4-a-s1}</td>
+          <td id="l-4-e-s1">${l-4-e-s1}</td>
+          <td id="l-5-r-s1">${l-5-r-s1}</td>
+          <td id="l-5-a-s1">${l-5-a-s1}</td>
+          <td id="l-5-e-s1">${l-5-e-s1}</td>
+          <td id="l-6-r-s1">${l-6-r-s1}</td>
+          <td id="l-6-a-s1">${l-6-a-s1}</td>
+          <td id="l-6-e-s1">${l-6-e-s1}</td>
+          <td id="l-a-r-s1">${l-a-r-s1}</td>
+          <td id="l-a-a-s1">${l-a-a-s1}</td>
+          <td id="l-a-e-s1">${l-a-e-s1}</td>
+        </tr>
+
+        <!-----------------------SHIFT CHANGE------------------------------------->
+        <tr>
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>07:00 pm - 08:00 pm</td>
+          <td id="l-2-r-7pm-8pm">${l-2-r-7pm-8pm}</td>
+          <td id="l-2-a-7pm-8pm">${l-2-a-7pm-8pm}</td>
+          <td id="l-2-e-7pm-8pm">${l-2-e-7pm-8pm}</td>
+          <td id="l-3-r-7pm-8pm">${l-3-r-7pm-8pm}</td>
+          <td id="l-3-a-7pm-8pm">${l-3-a-7pm-8pm}</td>
+          <td id="l-3-e-7pm-8pm">${l-3-e-7pm-8pm}</td>
+          <td id="l-4-r-7pm-8pm">${l-4-r-7pm-8pm}</td>
+          <td id="l-4-a-7pm-8pm">${l-4-a-7pm-8pm}</td>
+          <td id="l-4-e-7pm-8pm">${l-4-e-7pm-8pm}</td>
+          <td id="l-5-r-7pm-8pm">${l-5-r-7pm-8pm}</td>
+          <td id="l-5-a-7pm-8pm">${l-5-a-7pm-8pm}</td>
+          <td id="l-5-e-7pm-8pm">${l-5-e-7pm-8pm}</td>
+          <td id="l-6-r-7pm-8pm">${l-6-r-7pm-8pm}</td>
+          <td id="l-6-a-7pm-8pm">${l-6-a-7pm-8pm}</td>
+          <td id="l-6-e-7pm-8pm">${l-6-e-7pm-8pm}</td>
+          <td id="l-a-r-7pm-8pm">${l-a-r-7pm-8pm}</td>
+          <td id="l-a-a-7pm-8pm">${l-a-a-7pm-8pm}</td>
+          <td id="l-a-e-7pm-8pm">${l-a-e-7pm-8pm}</td>
+        </tr>
+        <tr>
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>08:00 pm - 09:00 pm</td>
+          <td id="l-2-r-8pm-9pm">${l-2-r-8pm-9pm}</td>
+          <td id="l-2-a-8pm-9pm">${l-2-a-8pm-9pm}</td>
+          <td id="l-2-e-8pm-9pm">${l-2-e-8pm-9pm}</td>
+          <td id="l-3-r-8pm-9pm">${l-3-r-8pm-9pm}</td>
+          <td id="l-3-a-8pm-9pm">${l-3-a-8pm-9pm}</td>
+          <td id="l-3-e-8pm-9pm">${l-3-e-8pm-9pm}</td>
+          <td id="l-4-r-8pm-9pm">${l-4-r-8pm-9pm}</td>
+          <td id="l-4-a-8pm-9pm">${l-4-a-8pm-9pm}</td>
+          <td id="l-4-e-8pm-9pm">${l-4-e-8pm-9pm}</td>
+          <td id="l-5-r-8pm-9pm">${l-5-r-8pm-9pm}</td>
+          <td id="l-5-a-8pm-9pm">${l-5-a-8pm-9pm}</td>
+          <td id="l-5-e-8pm-9pm">${l-5-e-8pm-9pm}</td>
+          <td id="l-6-r-8pm-9pm">${l-6-r-8pm-9pm}</td>
+          <td id="l-6-a-8pm-9pm">${l-6-a-8pm-9pm}</td>
+          <td id="l-6-e-8pm-9pm">${l-6-e-8pm-9pm}</td>
+          <td id="l-a-r-8pm-9pm">${l-a-r-8pm-9pm}</td>
+          <td id="l-a-a-8pm-9pm">${l-a-a-8pm-9pm}</td>
+          <td id="l-a-e-8pm-9pm">${l-a-e-8pm-9pm}</td>
+        </tr>
+        <tr>
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>09:00 pm - 10:00 pm</td>
+          <td id="l-2-r-9pm-10pm">${l-2-r-9pm-10pm}</td>
+          <td id="l-2-a-9pm-10pm">${l-2-a-9pm-10pm}</td>
+          <td id="l-2-e-9pm-10pm">${l-2-e-9pm-10pm}</td>
+          <td id="l-3-r-9pm-10pm">${l-3-r-9pm-10pm}</td>
+          <td id="l-3-a-9pm-10pm">${l-3-a-9pm-10pm}</td>
+          <td id="l-3-e-9pm-10pm">${l-3-e-9pm-10pm}</td>
+          <td id="l-4-r-9pm-10pm">${l-4-r-9pm-10pm}</td>
+          <td id="l-4-a-9pm-10pm">${l-4-a-9pm-10pm}</td>
+          <td id="l-4-e-9pm-10pm">${l-4-e-9pm-10pm}</td>
+          <td id="l-5-r-9pm-10pm">${l-5-r-9pm-10pm}</td>
+          <td id="l-5-a-9pm-10pm">${l-5-a-9pm-10pm}</td>
+          <td id="l-5-e-9pm-10pm">${l-5-e-9pm-10pm}</td>
+          <td id="l-6-r-9pm-10pm">${l-6-r-9pm-10pm}</td>
+          <td id="l-6-a-9pm-10pm">${l-6-a-9pm-10pm}</td>
+          <td id="l-6-e-9pm-10pm">${l-6-e-9pm-10pm}</td>
+          <td id="l-a-r-9pm-10pm">${l-a-r-9pm-10pm}</td>
+          <td id="l-a-a-9pm-10pm">${l-a-a-9pm-10pm}</td>
+          <td id="l-a-e-9pm-10pm">${l-a-e-9pm-10pm}</td>
+        </tr>
+        <tr>
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>10:00 pm - 11:00 pm</td>
+          <td id="l-2-r-10pm-11pm">${l-2-r-10pm-11pm}</td>
+          <td id="l-2-a-10pm-11pm">${l-2-a-10pm-11pm}</td>
+          <td id="l-2-e-10pm-11pm">${l-2-e-10pm-11pm}</td>
+          <td id="l-3-r-10pm-11pm">${l-3-r-10pm-11pm}</td>
+          <td id="l-3-a-10pm-11pm">${l-3-a-10pm-11pm}</td>
+          <td id="l-3-e-10pm-11pm">${l-3-e-10pm-11pm}</td>
+          <td id="l-4-r-10pm-11pm">${l-4-r-10pm-11pm}</td>
+          <td id="l-4-a-10pm-11pm">${l-4-a-10pm-11pm}</td>
+          <td id="l-4-e-10pm-11pm">${l-4-e-10pm-11pm}</td>
+          <td id="l-5-r-10pm-11pm">${l-5-r-10pm-11pm}</td>
+          <td id="l-5-a-10pm-11pm">${l-5-a-10pm-11pm}</td>
+          <td id="l-5-e-10pm-11pm">${l-5-e-10pm-11pm}</td>
+          <td id="l-6-r-10pm-11pm">${l-6-r-10pm-11pm}</td>
+          <td id="l-6-a-10pm-11pm">${l-6-a-10pm-11pm}</td>
+          <td id="l-6-e-10pm-11pm">${l-6-e-10pm-11pm}</td>
+          <td id="l-a-r-10pm-11pm">${l-a-r-10pm-11pm}</td>
+          <td id="l-a-a-10pm-11pm">${l-a-a-10pm-11pm}</td>
+          <td id="l-a-e-10pm-11pm">${l-a-e-10pm-11pm}</td>
+        </tr>
+        <tr>
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>11:00 pm - 12:00 am</td>
+          <td id="l-2-r-11pm-12am">${l-2-r-11pm-12am}</td>
+          <td id="l-2-a-11pm-12am">${l-2-a-11pm-12am}</td>
+          <td id="l-2-e-11pm-12am">${l-2-e-11pm-12am}</td>
+          <td id="l-3-r-11pm-12am">${l-3-r-11pm-12am}</td>
+          <td id="l-3-a-11pm-12am">${l-3-a-11pm-12am}</td>
+          <td id="l-3-e-11pm-12am">${l-3-e-11pm-12am}</td>
+          <td id="l-4-r-11pm-12am">${l-4-r-11pm-12am}</td>
+          <td id="l-4-a-11pm-12am">${l-4-a-11pm-12am}</td>
+          <td id="l-4-e-11pm-12am">${l-4-e-11pm-12am}</td>
+          <td id="l-5-r-11pm-12am">${l-5-r-11pm-12am}</td>
+          <td id="l-5-a-11pm-12am">${l-5-a-11pm-12am}</td>
+          <td id="l-5-e-11pm-12am">${l-5-e-11pm-12am}</td>
+          <td id="l-6-r-11pm-12am">${l-6-r-11pm-12am}</td>
+          <td id="l-6-a-11pm-12am">${l-6-a-11pm-12am}</td>
+          <td id="l-6-e-11pm-12am">${l-6-e-11pm-12am}</td>
+          <td id="l-a-r-11pm-12am">${l-a-r-11pm-12am}</td>
+          <td id="l-a-a-11pm-12am">${l-a-a-11pm-12am}</td>
+          <td id="l-a-e-11pm-12am">${l-a-e-11pm-12am}</td>
+        </tr>
+        <tr>
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>12:00 am - 01:00 am</td>
+          <td id="l-2-r-12am-1am">${l-2-r-12am-1am}</td>
+          <td id="l-2-a-12am-1am">${l-2-a-12am-1am}</td>
+          <td id="l-2-e-12am-1am">${l-2-e-12am-1am}</td>
+          <td id="l-3-r-12am-1am">${l-3-r-12am-1am}</td>
+          <td id="l-3-a-12am-1am">${l-3-a-12am-1am}</td>
+          <td id="l-3-e-12am-1am">${l-3-e-12am-1am}</td>
+          <td id="l-4-r-12am-1am">${l-4-r-12am-1am}</td>
+          <td id="l-4-a-12am-1am">${l-4-a-12am-1am}</td>
+          <td id="l-4-e-12am-1am">${l-4-e-12am-1am}</td>
+          <td id="l-5-r-12am-1am">${l-5-r-12am-1am}</td>
+          <td id="l-5-a-12am-1am">${l-5-a-12am-1am}</td>
+          <td id="l-5-e-12am-1am">${l-5-e-12am-1am}</td>
+          <td id="l-6-r-12am-1am">${l-6-r-12am-1am}</td>
+          <td id="l-6-a-12am-1am">${l-6-a-12am-1am}</td>
+          <td id="l-6-e-12am-1am">${l-6-e-12am-1am}</td>
+          <td id="l-a-r-12am-1am">${l-a-r-12am-1am}</td>
+          <td id="l-a-a-12am-1am">${l-a-a-12am-1am}</td>
+          <td id="l-a-e-12am-1am">${l-a-e-12am-1am}</td>
+        </tr>
+        <tr>
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>01:00 am - 02:00 am</td>
+          <td id="l-2-r-1am-2am">${l-2-r-1am-2am}</td>
+          <td id="l-2-a-1am-2am">${l-2-a-1am-2am}</td>
+          <td id="l-2-e-1am-2am">${l-2-e-1am-2am}</td>
+          <td id="l-3-r-1am-2am">${l-3-r-1am-2am}</td>
+          <td id="l-3-a-1am-2am">${l-3-a-1am-2am}</td>
+          <td id="l-3-e-1am-2am">${l-3-e-1am-2am}</td>
+          <td id="l-4-r-1am-2am">${l-4-r-1am-2am}</td>
+          <td id="l-4-a-1am-2am">${l-4-a-1am-2am}</td>
+          <td id="l-4-e-1am-2am">${l-4-e-1am-2am}</td>
+          <td id="l-5-r-1am-2am">${l-5-r-1am-2am}</td>
+          <td id="l-5-a-1am-2am">${l-5-a-1am-2am}</td>
+          <td id="l-5-e-1am-2am">${l-5-e-1am-2am}</td>
+          <td id="l-6-r-1am-2am">${l-6-r-1am-2am}</td>
+          <td id="l-6-a-1am-2am">${l-6-a-1am-2am}</td>
+          <td id="l-6-e-1am-2am">${l-6-e-1am-2am}</td>
+          <td id="l-a-r-1am-2am">${l-a-r-1am-2am}</td>
+          <td id="l-a-a-1am-2am">${l-a-a-1am-2am}</td>
+          <td id="l-a-e-1am-2am">${l-a-e-1am-2am}</td>
+        </tr>
+
+        <tr>
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>02:00 am - 03:00 am</td>
+          <td id="l-2-r-2am-3am">${l-2-r-2am-3am}</td>
+          <td id="l-2-a-2am-3am">${l-2-a-2am-3am}</td>
+          <td id="l-2-e-2am-3am">${l-2-e-2am-3am}</td>
+          <td id="l-3-r-2am-3am">${l-3-r-2am-3am}</td>
+          <td id="l-3-a-2am-3am">${l-3-a-2am-3am}</td>
+          <td id="l-3-e-2am-3am">${l-3-e-2am-3am}</td>
+          <td id="l-4-r-2am-3am">${l-4-r-2am-3am}</td>
+          <td id="l-4-a-2am-3am">${l-4-a-2am-3am}</td>
+          <td id="l-4-e-2am-3am">${l-4-e-2am-3am}</td>
+          <td id="l-5-r-2am-3am">${l-5-r-2am-3am}</td>
+          <td id="l-5-a-2am-3am">${l-5-a-2am-3am}</td>
+          <td id="l-5-e-2am-3am">${l-5-e-2am-3am}</td>
+          <td id="l-6-r-2am-3am">${l-6-r-2am-3am}</td>
+          <td id="l-6-a-2am-3am">${l-6-a-2am-3am}</td>
+          <td id="l-6-e-2am-3am">${l-6-e-2am-3am}</td>
+          <td id="l-a-r-2am-3am">${l-a-r-2am-3am}</td>
+          <td id="l-a-a-2am-3am">${l-a-a-2am-3am}</td>
+          <td id="l-a-e-2am-3am">${l-a-e-2am-3am}</td>
+        </tr>
+        <tr>
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>03:00 am - 04:00 am</td>
+          <td id="l-2-r-3am-4am">${l-2-r-3am-4am}</td>
+          <td id="l-2-a-3am-4am">${l-2-a-3am-4am}</td>
+          <td id="l-2-e-3am-4am">${l-2-e-3am-4am}</td>
+          <td id="l-3-r-3am-4am">${l-3-r-3am-4am}</td>
+          <td id="l-3-a-3am-4am">${l-3-a-3am-4am}</td>
+          <td id="l-3-e-3am-4am">${l-3-e-3am-4am}</td>
+          <td id="l-4-r-3am-4am">${l-4-r-3am-4am}</td>
+          <td id="l-4-a-3am-4am">${l-4-a-3am-4am}</td>
+          <td id="l-4-e-3am-4am">${l-4-e-3am-4am}</td>
+          <td id="l-5-r-3am-4am">${l-5-r-3am-4am}</td>
+          <td id="l-5-a-3am-4am">${l-5-a-3am-4am}</td>
+          <td id="l-5-e-3am-4am">${l-5-e-3am-4am}</td>
+          <td id="l-6-r-3am-4am">${l-6-r-3am-4am}</td>
+          <td id="l-6-a-3am-4am">${l-6-a-3am-4am}</td>
+          <td id="l-6-e-3am-4am">${l-6-e-3am-4am}</td>
+          <td id="l-a-r-3am-4am">${l-a-r-3am-4am}</td>
+          <td id="l-a-a-3am-4am">${l-a-a-3am-4am}</td>
+          <td id="l-a-e-3am-4am">${l-a-e-3am-4am}</td>
+        </tr>
+        <tr>
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>04:00 am - 05:00 am</td>
+          <td id="l-2-r-4am-5am">${l-2-r-4am-5am}</td>
+          <td id="l-2-a-4am-5am">${l-2-a-4am-5am}</td>
+          <td id="l-2-e-4am-5am">${l-2-e-4am-5am}</td>
+          <td id="l-3-r-4am-5am">${l-3-r-4am-5am}</td>
+          <td id="l-3-a-4am-5am">${l-3-a-4am-5am}</td>
+          <td id="l-3-e-4am-5am">${l-3-e-4am-5am}</td>
+          <td id="l-4-r-4am-5am">${l-4-r-4am-5am}</td>
+          <td id="l-4-a-4am-5am">${l-4-a-4am-5am}</td>
+          <td id="l-4-e-4am-5am">${l-4-e-4am-5am}</td>
+          <td id="l-5-r-4am-5am">${l-5-r-4am-5am}</td>
+          <td id="l-5-a-4am-5am">${l-5-a-4am-5am}</td>
+          <td id="l-5-e-4am-5am">${l-5-e-4am-5am}</td>
+          <td id="l-6-r-4am-5am">${l-6-r-4am-5am}</td>
+          <td id="l-6-a-4am-5am">${l-6-a-4am-5am}</td>
+          <td id="l-6-e-4am-5am">${l-6-e-4am-5am}</td>
+          <td id="l-a-r-4am-5am">${l-a-r-4am-5am}</td>
+          <td id="l-a-a-4am-5am">${l-a-a-4am-5am}</td>
+          <td id="l-a-e-4am-5am">${l-a-e-4am-5am}</td>
+        </tr>
+        <tr>
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>05:00 am - 06:00 am</td>
+          <td id="l-2-r-5am-6am">${l-2-r-5am-6am}</td>
+          <td id="l-2-a-5am-6am">${l-2-a-5am-6am}</td>
+          <td id="l-2-e-5am-6am">${l-2-e-5am-6am}</td>
+          <td id="l-3-r-5am-6am">${l-3-r-5am-6am}</td>
+          <td id="l-3-a-5am-6am">${l-3-a-5am-6am}</td>
+          <td id="l-3-e-5am-6am">${l-3-e-5am-6am}</td>
+          <td id="l-4-r-5am-6am">${l-4-r-5am-6am}</td>
+          <td id="l-4-a-5am-6am">${l-4-a-5am-6am}</td>
+          <td id="l-4-e-5am-6am">${l-4-e-5am-6am}</td>
+          <td id="l-5-r-5am-6am">${l-5-r-5am-6am}</td>
+          <td id="l-5-a-5am-6am">${l-5-a-5am-6am}</td>
+          <td id="l-5-e-5am-6am">${l-5-e-5am-6am}</td>
+          <td id="l-6-r-5am-6am">${l-6-r-5am-6am}</td>
+          <td id="l-6-a-5am-6am">${l-6-a-5am-6am}</td>
+          <td id="l-6-e-5am-6am">${l-6-e-5am-6am}</td>
+          <td id="l-a-r-5am-6am">${l-a-r-5am-6am}</td>
+          <td id="l-a-a-5am-6am">${l-a-a-5am-6am}</td>
+          <td id="l-a-e-5am-6am">${l-a-e-5am-6am}</td>
+        </tr>
+        <tr>
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>06:00 am - 07:00 am</td>
+          <td id="l-2-r-6am-7am">${l-2-r-6am-7am}</td>
+          <td id="l-2-a-6am-7am">${l-2-a-6am-7am}</td>
+          <td id="l-2-e-6am-7am">${l-2-e-6am-7am}</td>
+          <td id="l-3-r-6am-7am">${l-3-r-6am-7am}</td>
+          <td id="l-3-a-6am-7am">${l-3-a-6am-7am}</td>
+          <td id="l-3-e-6am-7am">${l-3-e-6am-7am}</td>
+          <td id="l-4-r-6am-7am">${l-4-r-6am-7am}</td>
+          <td id="l-4-a-6am-7am">${l-4-a-6am-7am}</td>
+          <td id="l-4-e-6am-7am">${l-4-e-6am-7am}</td>
+          <td id="l-5-r-6am-7am">${l-5-r-6am-7am}</td>
+          <td id="l-5-a-6am-7am">${l-5-a-6am-7am}</td>
+          <td id="l-5-e-6am-7am">${l-5-e-6am-7am}</td>
+          <td id="l-6-r-6am-7am">${l-6-r-6am-7am}</td>
+          <td id="l-6-a-6am-7am">${l-6-a-6am-7am}</td>
+          <td id="l-6-e-6am-7am">${l-6-e-6am-7am}</td>
+          <td id="l-a-r-6am-7am">${l-a-r-6am-7am}</td>
+          <td id="l-a-a-6am-7am">${l-a-a-6am-7am}</td>
+          <td id="l-a-e-6am-7am">${l-a-e-6am-7am}</td>
+        </tr>
+        <tr class="total-header">
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td>Shift 2 Total</td>
+          <td id="l-2-r-s2">${l-2-r-s2}</td>
+          <td id="l-2-a-s2">${l-2-a-s2}</td>
+          <td id="l-2-e-s2">${l-2-e-s2}</td>
+          <td id="l-3-r-s2">${l-3-r-s2}</td>
+          <td id="l-3-a-s2">${l-3-a-s2}</td>
+          <td id="l-3-e-s2">${l-3-e-s2}</td>
+          <td id="l-4-r-s2">${l-4-r-s2}</td>
+          <td id="l-4-a-s2">${l-4-a-s2}</td>
+          <td id="l-4-e-s2">${l-4-e-s2}</td>
+          <td id="l-5-r-s2">${l-5-r-s2}</td>
+          <td id="l-5-a-s2">${l-5-a-s2}</td>
+          <td id="l-5-e-s2">${l-5-e-s2}</td>
+          <td id="l-6-r-s2">${l-6-r-s2}</td>
+          <td id="l-6-a-s2">${l-6-a-s2}</td>
+          <td id="l-6-e-s2">${l-6-e-s2}</td>
+          <td id="l-a-r-s2">${l-a-r-s2}</td>
+          <td id="l-a-a-s2">${l-a-a-s2}</td>
+          <td id="l-a-e-s2">${l-a-e-s2}</td>
+        </tr>
+        <tr class="total-header">
+          <td>Day Total</td>
+          <!--
+            l - line
+            2,3,4,5,6 - line number
+            r - rated 
+            a - actual
+            e - efficiency
+            d - day
+            s1 - shift 1
+            s2 - shift 2
+            The last three, a means all lines
+          -->
+          <td id="l-2-r-d">${l-2-r-d}</td>
+          <td id="l-2-a-d">${l-2-a-d}</td>
+          <td id="l-2-e-d">${l-2-e-d}</td>
+          <td id="l-3-r-d">${l-3-r-d}</td>
+          <td id="l-3-a-d">${l-3-a-d}</td>
+          <td id="l-3-e-d">${l-3-e-d}</td>
+          <td id="l-4-r-d">${l-4-r-d}</td>
+          <td id="l-4-a-d">${l-4-a-d}</td>
+          <td id="l-4-e-d">${l-4-e-d}</td>
+          <td id="l-5-r-d">${l-5-r-d}</td>
+          <td id="l-5-a-d">${l-5-a-d}</td>
+          <td id="l-5-e-d">${l-5-e-d}</td>
+          <td id="l-6-r-d">${l-6-r-d}</td>
+          <td id="l-6-a-d">${l-6-a-d}</td>
+          <td id="l-6-e-d">${l-6-e-d}</td>
+          <td id="l-a-r-d">${l-a-r-d}</td>
+          <td id="l-a-a-d">${l-a-a-d}</td>
+          <td id="l-a-e-d">${l-a-e-d}</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="text-align: center" id="report-gen-notice">${currentDate}</p>
+    <script>
+      "use strict";
+
+      // This script is used to generate the report
+      const reportGenNotice = () => {
+        const reportGenNotice = document.getElementById("report-gen-notice");
+        const currentDate = new Date().toLocaleString("en-TT");
+        reportGenNotice.textContent = `Generated on ${currentDate} by Ignition & Puppeteer`;
+      };
+      // Generate the shift date
+      const reportGenShiftDate = () => {
+        const now = new Date();
+
+        // Determine if we’re before 7AM
+        const shiftStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 7, 3, 0);
+        if (now < shiftStart) {
+          // Move to previous day
+          shiftStart.setDate(shiftStart.getDate() - 1);
+        }
+
+        // Ordinal suffix helper
+        const getOrdinal = (n) => {
+          if (n >= 11 && n <= 13) return `${n}th`;
+          switch (n % 10) {
+            case 1: return `${n}st`;
+            case 2: return `${n}nd`;
+            case 3: return `${n}rd`;
+            default: return `${n}th`;
+          }
+        };
+
+        const weekday = shiftStart.toLocaleDateString('en-US', { weekday: 'long' });
+        const day = getOrdinal(shiftStart.getDate());
+        const month = shiftStart.toLocaleDateString('en-US', { month: 'long' });
+        const year = shiftStart.getFullYear();
+
+        const dateString = `${weekday} ${day} ${month}, ${year}`;
+        console.log(`Date string: ${dateString}`);
+        const reportGenShiftDate = document.getElementById(
+          "report-gen-shift-date"
+        );
+        reportGenShiftDate.textContent = `${dateString}`;
+      };
+
+      document.addEventListener("DOMContentLoaded", () => {
+        reportGenNotice();
+        reportGenShiftDate();
+      });
+
+      const ids = {
+        "line-2-sku": " ",
+        "line-3-sku": " ",
+        "line-4-sku": " ",
+        "line-5-sku": " ",
+        "line-6-sku": " ",
+
+        "l-2-r-7-9am": "",
+        "l-2-a-7-9am": "",
+        "l-2-e-7-9am": "",
+        "l-3-r-7-9am": "",
+        "l-3-a-7-9am": "",
+        "l-3-e-7-9am": "",
+        "l-4-r-7-9am": "",
+        "l-4-a-7-9am": "",
+        "l-4-e-7-9am": "",
+        "l-5-r-7-9am": "",
+        "l-5-a-7-9am": "",
+        "l-5-e-7-9am": "",
+        "l-6-r-7-9am": "",
+        "l-6-a-7-9am": "",
+        "l-6-e-7-9am": "",
+        "l-a-r-7-9am": "",
+        "l-a-a-7-9am": "",
+        "l-a-e-7-9am": "",
+
+        "l-2-r-9-11am": "",
+        "l-2-a-9-11am": "",
+        "l-2-e-9-11am": "",
+        "l-3-r-9-11am": "",
+        "l-3-a-9-11am": "",
+        "l-3-e-9-11am": "",
+        "l-4-r-9-11am": "",
+        "l-4-a-9-11am": "",
+        "l-4-e-9-11am": "",
+        "l-5-r-9-11am": "",
+        "l-5-a-9-11am": "",
+        "l-5-e-9-11am": "",
+        "l-6-r-9-11am": "",
+        "l-6-a-9-11am": "",
+        "l-6-e-9-11am": "",
+        "l-a-r-9-11am": "",
+        "l-a-a-9-11am": "",
+        "l-a-e-9-11am": "",
+
+        "l-2-r-11-1pm": "",
+        "l-2-a-11-1pm": "",
+        "l-2-e-11-1pm": "",
+        "l-3-r-11-1pm": "",
+        "l-3-a-11-1pm": "",
+        "l-3-e-11-1pm": "",
+        "l-4-r-11-1pm": "",
+        "l-4-a-11-1pm": "",
+        "l-4-e-11-1pm": "",
+        "l-5-r-11-1pm": "",
+        "l-5-a-11-1pm": "",
+        "l-5-e-11-1pm": "",
+        "l-6-r-11-1pm": "",
+        "l-6-a-11-1pm": "",
+        "l-6-e-11-1pm": "",
+        "l-a-r-11-1pm": "",
+        "l-a-a-11-1pm": "",
+        "l-a-e-11-1pm": "",
+
+        "l-2-r-1-3pm": "",
+        "l-2-a-1-3pm": "",
+        "l-2-e-1-3pm": "",
+        "l-3-r-1-3pm": "",
+        "l-3-a-1-3pm": "",
+        "l-3-e-1-3pm": "",
+        "l-4-r-1-3pm": "",
+        "l-4-a-1-3pm": "",
+        "l-4-e-1-3pm": "",
+        "l-5-r-1-3pm": "",
+        "l-5-a-1-3pm": "",
+        "l-5-e-1-3pm": "",
+        "l-6-r-1-3pm": "",
+        "l-6-a-1-3pm": "",
+        "l-6-e-1-3pm": "",
+        "l-a-r-1-3pm": "",
+        "l-a-a-1-3pm": "",
+        "l-a-e-1-3pm": "",
+
+        "l-2-r-3-5pm": "",
+        "l-2-a-3-5pm": "",
+        "l-2-e-3-5pm": "",
+        "l-3-r-3-5pm": "",
+        "l-3-a-3-5pm": "",
+        "l-3-e-3-5pm": "",
+        "l-4-r-3-5pm": "",
+        "l-4-a-3-5pm": "",
+        "l-4-e-3-5pm": "",
+        "l-5-r-3-5pm": "",
+        "l-5-a-3-5pm": "",
+        "l-5-e-3-5pm": "",
+        "l-6-r-3-5pm": "",
+        "l-6-a-3-5pm": "",
+        "l-6-e-3-5pm": "",
+        "l-a-r-3-5pm": "",
+        "l-a-a-3-5pm": "",
+        "l-a-e-3-5pm": "",
+        "l-2-r-5-7pm": "",
+        "l-2-a-5-7pm": "",
+        "l-2-e-5-7pm": "",
+        "l-3-r-5-7pm": "",
+        "l-3-a-5-7pm": "",
+        "l-3-e-5-7pm": "",
+        "l-4-r-5-7pm": "",
+        "l-4-a-5-7pm": "",
+        "l-4-e-5-7pm": "",
+        "l-5-r-5-7pm": "",
+        "l-5-a-5-7pm": "",
+        "l-5-e-5-7pm": "",
+        "l-6-r-5-7pm": "",
+        "l-6-a-5-7pm": "",
+        "l-6-e-5-7pm": "",
+        "l-a-r-5-7pm": "",
+        "l-a-a-5-7pm": "",
+        "l-a-e-5-7pm": "",
+
+        "l-2-r-s1": "",
+        "l-2-a-s1": "",
+        "l-2-e-s1": "",
+        "l-3-r-s1": "",
+        "l-3-a-s1": "",
+        "l-3-e-s1": "",
+        "l-4-r-s1": "",
+        "l-4-a-s1": "",
+        "l-4-e-s1": "",
+        "l-5-r-s1": "",
+        "l-5-a-s1": "",
+        "l-5-e-s1": "",
+        "l-6-r-s1": "",
+        "l-6-a-s1": "",
+        "l-6-e-s1": "",
+        "l-a-r-s1": "",
+        "l-a-a-s1": "",
+        "l-a-e-s1": "",
+
+        "l-2-r-7-9pm": "",
+        "l-2-a-7-9pm": "",
+        "l-2-e-7-9pm": "",
+        "l-3-r-7-9pm": "",
+        "l-3-a-7-9pm": "",
+        "l-3-e-7-9pm": "",
+        "l-4-r-7-9pm": "",
+        "l-4-a-7-9pm": "",
+        "l-4-e-7-9pm": "",
+        "l-5-r-7-9pm": "",
+        "l-5-a-7-9pm": "",
+        "l-5-e-7-9pm": "",
+        "l-6-r-7-9pm": "",
+        "l-6-a-7-9pm": "",
+        "l-6-e-7-9pm": "",
+        "l-a-r-7-9pm": "",
+        "l-a-a-7-9pm": "",
+        "l-a-e-7-9pm": "",
+
+        "l-2-r-9-11pm": "",
+        "l-2-a-9-11pm": "",
+        "l-2-e-9-11pm": "",
+        "l-3-r-9-11pm": "",
+        "l-3-a-9-11pm": "",
+        "l-3-e-9-11pm": "",
+        "l-4-r-9-11pm": "",
+        "l-4-a-9-11pm": "",
+        "l-4-e-9-11pm": "",
+        "l-5-r-9-11pm": "",
+        "l-5-a-9-11pm": "",
+        "l-5-e-9-11pm": "",
+        "l-6-r-9-11pm": "",
+        "l-6-a-9-11pm": "",
+        "l-6-e-9-11pm": "",
+        "l-a-r-9-11pm": "",
+        "l-a-a-9-11pm": "",
+        "l-a-e-9-11pm": "",
+
+        "l-2-r-11-1am": "",
+        "l-2-a-11-1am": "",
+        "l-2-e-11-1am": "",
+        "l-3-r-11-1am": "",
+        "l-3-a-11-1am": "",
+        "l-3-e-11-1am": "",
+        "l-4-r-11-1am": "",
+        "l-4-a-11-1am": "",
+        "l-4-e-11-1am": "",
+        "l-5-r-11-1am": "",
+        "l-5-a-11-1am": "",
+        "l-5-e-11-1am": "",
+        "l-6-r-11-1am": "",
+        "l-6-a-11-1am": "",
+        "l-6-e-11-1am": "",
+        "l-a-r-11-1am": "",
+        "l-a-a-11-1am": "",
+        "l-a-e-11-1am": "",
+
+        "l-2-r-1-3am": "",
+        "l-2-a-1-3am": "",
+        "l-2-e-1-3am": "",
+        "l-3-r-1-3am": "",
+        "l-3-a-1-3am": "",
+        "l-3-e-1-3am": "",
+        "l-4-r-1-3am": "",
+        "l-4-a-1-3am": "",
+        "l-4-e-1-3am": "",
+        "l-5-r-1-3am": "",
+        "l-5-a-1-3am": "",
+        "l-5-e-1-3am": "",
+        "l-6-r-1-3am": "",
+        "l-6-a-1-3am": "",
+        "l-6-e-1-3am": "",
+        "l-a-r-1-3am": "",
+        "l-a-a-1-3am": "",
+        "l-a-e-1-3am": "",
+
+        "l-2-r-3-5am": "",
+        "l-2-a-3-5am": "",
+        "l-2-e-3-5am": "",
+        "l-3-r-3-5am": "",
+        "l-3-a-3-5am": "",
+        "l-3-e-3-5am": "",
+        "l-4-r-3-5am": "",
+        "l-4-a-3-5am": "",
+        "l-4-e-3-5am": "",
+        "l-5-r-3-5am": "",
+        "l-5-a-3-5am": "",
+        "l-5-e-3-5am": "",
+        "l-6-r-3-5am": "",
+        "l-6-a-3-5am": "",
+        "l-6-e-3-5am": "",
+        "l-a-r-3-5am": "",
+        "l-a-a-3-5am": "",
+        "l-a-e-3-5am": "",
+
+        "l-2-r-5-7am": "",
+        "l-2-a-5-7am": "",
+        "l-2-e-5-7am": "",
+        "l-3-r-5-7am": "",
+        "l-3-a-5-7am": "",
+        "l-3-e-5-7am": "",
+        "l-4-r-5-7am": "",
+        "l-4-a-5-7am": "",
+        "l-4-e-5-7am": "",
+        "l-5-r-5-7am": "",
+        "l-5-a-5-7am": "",
+        "l-5-e-5-7am": "",
+        "l-6-r-5-7am": "",
+        "l-6-a-5-7am": "",
+        "l-6-e-5-7am": "",
+        "l-a-r-5-7am": "",
+        "l-a-a-5-7am": "",
+        "l-a-e-5-7am": "",
+
+        "l-2-r-s2": "",
+        "l-2-a-s2": "",
+        "l-2-e-s2": "",
+        "l-3-r-s2": "",
+        "l-3-a-s2": "",
+        "l-3-e-s2": "",
+        "l-4-r-s2": "",
+        "l-4-a-s2": "",
+        "l-4-e-s2": "",
+        "l-5-r-s2": "",
+        "l-5-a-s2": "",
+        "l-5-e-s2": "",
+        "l-6-r-s2": "",
+        "l-6-a-s2": "",
+        "l-6-e-s2": "",
+        "l-a-r-s2": "",
+        "l-a-a-s2": "",
+        "l-a-e-s2": "",
+
+        "l-2-r-d": "",
+        "l-2-a-d": "",
+        "l-2-e-d": "",
+        "l-3-r-d": "",
+        "l-3-a-d": "",
+        "l-3-e-d": "",
+        "l-4-r-d": "",
+        "l-4-a-d": "",
+        "l-4-e-d": "",
+        "l-5-r-d": "",
+        "l-5-a-d": "",
+        "l-5-e-d": "",
+        "l-6-r-d": "",
+        "l-6-a-d": "",
+        "l-6-e-d": "",
+        "l-a-r-d": "",
+        "l-a-a-d": "",
+        "l-a-e-d": "",
+      };
+
+      // This function updates the table with the data from the ids object
+      const updateTable = () => {
+        for (const [id, value] of Object.entries(ids)) {
+          const element = document.getElementById(id);
+          if (element) {
+            element.textContent = value;
+          }
+        }
+      };
+
+      //updateTable();
+
+      const efficiencyIds = [
+        "l-2-e-7-9am",
+        "l-3-e-7-9am",
+        "l-4-e-7-9am",
+        "l-5-e-7-9am",
+        "l-6-e-7-9am",
+        "l-a-e-7-9am",
+        "l-2-e-9-11am",
+        "l-3-e-9-11am",
+        "l-4-e-9-11am",
+        "l-5-e-9-11am",
+        "l-6-e-9-11am",
+        "l-a-e-9-11am",
+        "l-2-e-11-1pm",
+        "l-3-e-11-1pm",
+        "l-4-e-11-1pm",
+        "l-5-e-11-1pm",
+        "l-6-e-11-1pm",
+        "l-a-e-11-1pm",
+
+        "l-2-e-1-3pm",
+        "l-3-e-1-3pm",
+        "l-4-e-1-3pm",
+        "l-5-e-1-3pm",
+        "l-6-e-1-3pm",
+        "l-a-e-1-3pm",
+
+        "l-2-e-3-5pm",
+        "l-3-e-3-5pm",
+        "l-4-e-3-5pm",
+        "l-5-e-3-5pm",
+        "l-6-e-3-5pm",
+        "l-a-e-3-5pm",
+
+        "l-2-e-5-7pm",
+        "l-3-e-5-7pm",
+        "l-4-e-5-7pm",
+        "l-5-e-5-7pm",
+        "l-6-e-5-7pm",
+        "l-a-e-5-7pm",
+
+        "l-2-e-s1",
+        "l-3-e-s1",
+        "l-4-e-s1",
+        "l-5-e-s1",
+        "l-6-e-s1",
+        "l-a-e-s1",
+
+        "l-2-e-7-9pm",
+        "l-3-e-7-9pm",
+        "l-4-e-7-9pm",
+        "l-5-e-7-9pm",
+        "l-6-e-7-9pm",
+        "l-a-e-7-9pm",
+
+        "l-2-e-9-11pm",
+        "l-3-e-9-11pm",
+        "l-4-e-9-11pm",
+        "l-5-e-9-11pm",
+        "l-6-e-9-11pm",
+        "l-a-e-9-11pm",
+
+        "l-2-e-11-1am",
+        "l-3-e-11-1am",
+        "l-4-e-11-1am",
+        "l-5-e-11-1am",
+        "l-6-e-11-1am",
+        "l-a-e-11-1am",
+
+        "l-2-e-1-3am",
+        "l-3-e-1-3am",
+        "l-4-e-1-3am",
+        "l-5-e-1-3am",
+        "l-6-e-1-3am",
+        "l-a-e-1-3am",
+
+        "l-2-e-3-5am",
+        "l-3-e-3-5am",
+        "l-4-e-3-5am",
+        "l-5-e-3-5am",
+        "l-6-e-3-5am",
+        "l-a-e-3-5am",
+
+        "l-2-e-5-7am",
+        "l-3-e-5-7am",
+        "l-4-e-5-7am",
+        "l-5-e-5-7am",
+        "l-6-e-5-7am",
+        "l-a-e-5-7am",
+
+        "l-2-e-s2",
+        "l-3-e-s2",
+        "l-4-e-s2",
+        "l-5-e-s2",
+        "l-6-e-s2",
+        "l-a-e-s2",
+
+        "l-2-e-d",
+        "l-3-e-d",
+        "l-4-e-d",
+        "l-5-e-d",
+        "l-6-e-d",
+        "l-a-e-d",
+      ];
+
+      const applyColourClass = (efficiencyIds) => {
+        efficiencyIds.forEach((id) => {
+          const element = document.getElementById(id);
+          if (element) {
+            const efficiency = parseFloat(element.textContent);
+            if (efficiency === "") {
+              element.classList.add = "";
+            } else if (efficiency <= 70) {
+              element.classList.add("red");
+            } else if (efficiency > 70 && efficiency <= 79) {
+              element.classList.add("yellow");
+            } else if (efficiency > 79) {
+              element.classList.add("green");
+            }
+          }
+        });
+      };
+    </script>
+  </body>
+</html>
