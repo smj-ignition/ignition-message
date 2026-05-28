@@ -1,0 +1,32 @@
+{
+    "@odata.context": "https://centralusdtapp35.epicorsaas.com/server/api/v2/odata/SMJ-02/BaqSvc/QMSJobs/$metadata#Data",
+    "value": [
+        {
+            "JobHead_JobNum": "0067548",
+            "JobHead_PartNum": "F80322",
+            "JobHead_ProdQty": 28652.00000000,
+            "JobHead_StartDate": "2026-05-27T00:00:00-05:00",
+            "JobHead_StartHour": 5.40,
+            "JobOper_OpCode": "FILPAK",
+            "JobOper_EstProdHours": 28.65,
+            "JobOper_ProdStandard": 1000.00000000,
+            "JobOper_QtyPer": 1.00000000,
+            "JobOpDtl_ResourceID": "FPBHL3LZ36CL",
+            "JobOpDtl_ResourceGrpID": "FPBHL3",
+            "JobHead_SchedStatus": "R",
+            "Part_CommercialBrand": "Lucozade",
+            "Part_CommercialSize1": "360ml",
+            "Part_CommercialSize2": "X24",
+            "Part_CommercialColor": "Orange",
+            "LaborDtl_ClockInDate": "2026-05-28T00:00:00-05:00",
+            "LaborDtl_ClockinTime": 6.12,
+            "LaborDtl_Complete": true,
+            "LaborDtl_ActiveTrans": true,
+            "LaborDtl_ClockOutTime": 24.00,
+            "LaborDtl_CreateTime": 22047,
+            "LaborDtl_CreateDate": "2026-05-28T00:00:00-05:00",
+            "Calculated_EstEndTime": 34.77,
+            "RowIdent": "00000001-0000-0000-0000-000000000000"
+        }
+    ]
+}

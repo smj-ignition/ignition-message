@@ -181,6 +181,25 @@ async function fetchEpicorPO(poNumber) {
   return json.value?.[0] ?? null;
 }
 
+async function fetchEpicorJob(resourceGrpId) {
+  const url =
+    `https://centralusdtapp35.epicorsaas.com/saas853/api/v2/odata/SMJ-02/BaqSvc/QMSJobs/Data` +
+    `?$filter=JobOpDtl_ResourceGrpID eq '${resourceGrpId}' and LaborDtl_ActiveTrans eq true`;
+
+  const response = await fetch(url, {
+    headers: {
+      "Accept":        "application/json",
+      "X-API-Key":     process.env.EPICOR_API_KEY,
+      "Authorization": process.env.EPICOR_AUTHORIZATION,
+      "CallSettings":  process.env.EPICOR_CALL_SETTINGS,
+    },
+  });
+
+  if (!response.ok) throw new Error(`Epicor Jobs API responded with ${response.status}`);
+  const json = await response.json();
+  return json.value?.[0] ?? null;
+}
+
 function formatEpicorPO(data) {
   if (!data) return "*Epicor*: ⚠️ Not found";
 
@@ -526,6 +545,131 @@ fastify.post(
     } catch (error) {
       console.error("Error sending daily production update:", error);
       reply.status(500).send({ status: "error", message: "Failed to send daily production update." });
+    }
+  }
+);
+
+fastify.post(
+  "/generateProductionReport",
+  async function handler(request, reply) {
+    try {
+      let rows;
+      if (request.query.localtest === "true") {
+        const ignitionRes = await fetch(
+          "http://192.168.164.10:8088/system/webdev/SMJ_Production/getDailyCaseCountByHour"
+        );
+        if (!ignitionRes.ok) throw new Error(`Ignition responded with ${ignitionRes.status}`);
+        rows = await ignitionRes.json();
+      } else {
+        rows = request.body.rows;
+      }
+
+      const LINE_NUMS = [2, 3, 4, 5, 6];
+      const LINE_COLS = { 2: 2, 3: 5, 4: 8, 5: 11, 6: 14, a: 17 };
+      const TIME_SLOTS = [
+        "7am-8am",   "8am-9am",   "9am-10am",  "10am-11am", "11am-12pm", "12pm-1pm",
+        "1pm-2pm",   "2pm-3pm",   "3pm-4pm",   "4pm-5pm",   "5pm-6pm",   "6pm-7pm",
+        "7pm-8pm",   "8pm-9pm",   "9pm-10pm",  "10pm-11pm", "11pm-12am", "12am-1am",
+        "1am-2am",   "2am-3am",   "3am-4am",   "4am-5am",   "5am-6am",   "6am-7am",
+      ];
+      const S1_ROWS = Array.from({ length: 12 }, (_, i) => i);
+      const S2_ROWS = Array.from({ length: 12 }, (_, i) => i + 12);
+      const sumRows  = (indices, col) =>
+        indices.reduce((sum, i) => sum + (rows[i][col] || 0), 0);
+
+      // Fetch active Epicor jobs for all lines in parallel
+      const jobResults = await Promise.allSettled(
+        LINE_NUMS.map((line) => fetchEpicorJob(`FPBHL${line}`))
+      );
+      const lineJobs = {};
+      LINE_NUMS.forEach((line, idx) => {
+        lineJobs[line] = jobResults[idx].status === "fulfilled" ? jobResults[idx].value : null;
+      });
+
+      const getRated = (line) => lineJobs[line]?.JobOper_ProdStandard ?? 0;
+      const getSku   = (line) => {
+        const j = lineJobs[line];
+        if (!j) return "-";
+        const sku = [j.Part_CommercialBrand, j.Part_CommercialSize1, j.Part_CommercialSize2, j.Part_CommercialColor]
+          .filter(Boolean).join(" ").replace(/X/g, "×");
+        return sku || "-";
+      };
+
+      const totalRatedPerHour = LINE_NUMS.reduce((sum, line) => sum + getRated(line), 0);
+
+      const eff = (actual, rated) =>
+        rated > 0 ? Math.round((actual / rated) * 100).toLocaleString("en-TT") : "";
+
+      // Determine which TIME_SLOTS index is currently active (Trinidad timezone).
+      // Shift day runs 7am–7am: hours 7–23 → slots 0–16, hours 0–6 → slots 17–23.
+      const nowHour = new Date().toLocaleString("en-TT", {
+        timeZone: "America/Port_of_Spain",
+        hour: "numeric",
+        hour12: false,
+      });
+      const currentHour = parseInt(nowHour, 10);
+      const currentSlotIndex = currentHour >= 7 ? currentHour - 7 : currentHour + 17;
+
+      const replacements = {};
+
+      TIME_SLOTS.forEach((slot, i) => {
+        const isCurrentSlot = i === currentSlotIndex;
+        for (const [line, col] of Object.entries(LINE_COLS)) {
+          const rph    = isCurrentSlot ? (line === "a" ? totalRatedPerHour : getRated(Number(line))) : 0;
+          const actual = rows[i][col] || 0;
+          replacements[`\${l-${line}-r-${slot}}`] = isCurrentSlot && rph ? rph.toLocaleString("en-TT") : "";
+          replacements[`\${l-${line}-a-${slot}}`] = actual.toLocaleString("en-TT");
+          replacements[`\${l-${line}-e-${slot}}`] = isCurrentSlot ? eff(actual, rph) : "";
+        }
+      });
+
+      for (const [line, col] of Object.entries(LINE_COLS)) {
+        const s1 = sumRows(S1_ROWS, col);
+        const s2 = sumRows(S2_ROWS, col);
+        replacements[`\${l-${line}-r-s1}`] = "";
+        replacements[`\${l-${line}-a-s1}`] = s1.toLocaleString("en-TT");
+        replacements[`\${l-${line}-e-s1}`] = "";
+        replacements[`\${l-${line}-r-s2}`] = "";
+        replacements[`\${l-${line}-a-s2}`] = s2.toLocaleString("en-TT");
+        replacements[`\${l-${line}-e-s2}`] = "";
+        replacements[`\${l-${line}-r-d}`]  = "";
+        replacements[`\${l-${line}-a-d}`]  = (s1 + s2).toLocaleString("en-TT");
+        replacements[`\${l-${line}-e-d}`]  = "";
+      }
+
+      for (const line of LINE_NUMS) {
+        replacements[`\${line-${line}-sku}`] = getSku(line);
+      }
+
+      replacements["${currentDate}"] = new Date().toLocaleDateString("en-TT", {
+        timeZone: "America/Port_of_Spain",
+      });
+
+      let html = fs.readFileSync("index.html", "utf8");
+      for (const [placeholder, value] of Object.entries(replacements)) {
+        html = html.replace(placeholder, value);
+      }
+
+      const browser = await puppeteer.launch({
+        headless: "new",
+        defaultViewport: { width: 1350, height: 720 },
+      });
+      const page = await browser.newPage();
+      await page.setContent(html, { waitUntil: "load" });
+      const element = await page.$("body");
+      await element.screenshot({ path: "report.png" });
+      await browser.close();
+
+      const data        = fs.readFileSync("report.png");
+      const base64Image = Buffer.from(data).toString("base64");
+      const media       = new MessageMedia("image/png", base64Image);
+      const message     = `[Spark - ${new Date().toLocaleString("en-TT")}] - Hourly production report`;
+      await client.sendMessage("120363410453382826@g.us", message, { media });
+
+      reply.type("image/png").send(data);
+    } catch (error) {
+      console.error("Error generating production report:", error);
+      reply.status(500).send({ status: "error", message: "Failed to generate production report." });
     }
   }
 );
