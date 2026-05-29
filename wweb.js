@@ -22,6 +22,12 @@ const pool = new Pool({
   password: process.env.POSTGRESQL_PASSWORD,
 });
 
+// Separate Ignition DB connection — backs the hourly report_data table. The server
+// rejects SSL, so no ssl option. Host must be whitelisted in the server's pg_hba.conf.
+const ignitionPool = new Pool({
+  connectionString: process.env.POSTGRESQL_DATABASE_IGNITION_URL,
+});
+
 const TABLE = process.env.POSTGRESQL_TABLE_NAME;
 
 const MAINTAINX_API_KEY = process.env.MAINTAINX_API_KEY;
@@ -198,6 +204,163 @@ async function fetchEpicorJob(resourceGrpId) {
   if (!response.ok) throw new Error(`Epicor Jobs API responded with ${response.status}`);
   const json = await response.json();
   return json.value?.[0] ?? null;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// OVERLAP-BASED "RATED CASES PER HOUR" (validated against real Epicor BAQ dump —
+// see handoff-rated-overlap-VALIDATED.md). Pulls a window of FILPAK labor rows per
+// line and computes rated by precedence over the hour's interval boundaries, so a
+// partial/CIP-split hour scores its scheduled run time instead of a flat rate.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Windowed pull mirroring fetchEpicorJob: same proven base URL + headers, drop the
+// ActiveTrans filter, add a 36h lookback. Returns ALL FILPAK rows in the window.
+async function fetchEpicorLaborWindow(resourceGrpId) {
+  // 36h covers overnight spillover (a row clocked in yesterday evening, out after
+  // midnight). Correctness does NOT depend on this bound — the overlap math zeroes
+  // out rows outside the target hour — so if the date clause ever errors on the BAQ
+  // it is safe to drop.
+  const sinceIso = new Date(Date.now() - 36 * 3600 * 1000).toISOString();
+
+  const url =
+    `https://centralusdtapp35.epicorsaas.com/saas853/api/v2/odata/SMJ-02/BaqSvc/QMSJobs/Data` +
+    `?$filter=JobOpDtl_ResourceGrpID eq '${resourceGrpId}'` +
+    ` and LaborDtl_ClockInDate ge ${sinceIso}`;
+
+  const response = await fetch(url, {
+    headers: {
+      "Accept":        "application/json",
+      "X-API-Key":     process.env.EPICOR_API_KEY,
+      "Authorization": process.env.EPICOR_AUTHORIZATION,
+      "CallSettings":  process.env.EPICOR_CALL_SETTINGS,
+    },
+  });
+
+  if (!response.ok) throw new Error(`Epicor Jobs API responded with ${response.status}`);
+  const json = await response.json();
+  return json.value ?? [];
+}
+
+// ── Plant-local "now" as a naive timeline (treat AST wall-clock as if it were UTC) ──
+// The Epicor decimal ClockinTime/ClockOutTime are plant-local AST hour-of-day (shift
+// boundaries cluster on 7/17/19), so we ignore the -05:00 stamp and line these up
+// against Ignition's plant-local hourly buckets.
+function plantLocalParts(date = new Date()) {
+  const p = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Port_of_Spain",
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit",
+    hour12: false,
+  }).formatToParts(date).reduce((o, x) => ((o[x.type] = x.value), o), {});
+  return { y: +p.year, m: +p.month, d: +p.day,
+           H: +p.hour % 24, M: +p.minute, S: +p.second }; // %24 guards "24" at midnight
+}
+function plantMs(y, m, d, H = 0, M = 0, S = 0) {
+  return Date.UTC(y, m - 1, d, H, M, S); // naive: plant wall-clock interpreted as UTC
+}
+function nowOnTimeline() {
+  const p = plantLocalParts();
+  return plantMs(p.y, p.m, p.d, p.H, p.M, p.S);
+}
+function lastHourStartMs() {
+  const p = plantLocalParts();                       // report runs at :02 → report the prior hour
+  return plantMs(p.y, p.m, p.d, p.H, 0, 0) - 3600000;
+}
+
+// ── Convert an Epicor labor row's clock-hour to the same naive timeline ──
+function epicorClockToMs(clockInDateStr, decHour, addDay = false) {
+  const [y, m, d] = clockInDateStr.slice(0, 10).split("-").map(Number); // slice avoids the -05:00 offset
+  let ms = Date.UTC(y, m - 1, d) + Math.round(decHour * 3600) * 1000;
+  if (addDay) ms += 86400000;
+  return ms;
+}
+function recordInterval(rec) {
+  const startMs = epicorClockToMs(rec.LaborDtl_ClockInDate, rec.LaborDtl_ClockinTime);
+  // STRICT '<' — a row where ClockOut === ClockIn is a zero-length placeholder, NOT a
+  // 24h overnight interval. Using '<=' turned 0.0→0.0 rows into phantom full days
+  // (+std/hr all day in the real dump). Do not revert to '<='.
+  const crossed = rec.LaborDtl_ClockOutTime < rec.LaborDtl_ClockinTime;
+  let endMs = epicorClockToMs(rec.LaborDtl_ClockInDate, rec.LaborDtl_ClockOutTime, crossed);
+  if (rec.LaborDtl_ActiveTrans) endMs = nowOnTimeline(); // ClockOut=24.0 is a planned EOD sentinel
+  return { startMs, endMs };
+}
+
+// ── Rated cases for one hour (PRECEDENCE: single physical filler per line; latest
+// clock-in wins). Equals the per-job SUM on clean data; stays bounded when labor rows
+// for different jobs overlap for hours (loose changeover clocking, common here). ──
+const RATED_MODE = "precedence"; // "precedence" (default, single filler) | "sum" (aggregate)
+
+function ratedCasesForHour(records, hourStartMs) {
+  const hourEndMs = hourStartMs + 3600000;
+
+  // Clip each FILPAK interval to the hour; drop zero-length placeholders.
+  const segs = [];
+  for (const r of records) {
+    if (r.JobOper_OpCode !== "FILPAK") continue; // load-bearing guard, keep it
+    if (!r.LaborDtl_ActiveTrans &&
+        r.LaborDtl_ClockOutTime === r.LaborDtl_ClockinTime) continue; // skip 0-length
+    const { startMs, endMs } = recordInterval(r);
+    const s = Math.max(startMs, hourStartMs);
+    const e = Math.min(endMs, hourEndMs);
+    if (e <= s) continue;
+    segs.push({ s, e, std: r.JobOper_ProdStandard, clockIn: startMs });
+  }
+  if (!segs.length) return 0;
+
+  if (RATED_MODE === "sum") {
+    // Original design: Σ per (job|std) merged overlap. Over-reports on overlapping
+    // labor — retained only as documentation of the original approach.
+    const groups = new Map();
+    for (const sg of segs) {
+      const key = sg.std; // std is 1:1 with job here; group concurrent same-job rows
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push({ startMs: sg.s, endMs: sg.e });
+    }
+    let rated = 0;
+    for (const [std, ivals] of groups) {
+      const merged = ivals.sort((a, b) => a.startMs - b.startMs)
+        .reduce((out, iv) => {
+          const last = out[out.length - 1];
+          if (last && iv.startMs <= last.endMs) last.endMs = Math.max(last.endMs, iv.endMs);
+          else out.push({ ...iv });
+          return out;
+        }, []);
+      for (const iv of merged) rated += (iv.endMs - iv.startMs) / 3600000 * std;
+    }
+    return Math.round(rated);
+  }
+
+  // PRECEDENCE: sweep boundaries; in each slice the most-recently-clocked-in job runs.
+  const pts = [...new Set(segs.flatMap(x => [x.s, x.e]))].sort((a, b) => a - b);
+  let rated = 0;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i], b = pts[i + 1], mid = (a + b) / 2;
+    let best = null;
+    for (const sg of segs)
+      if (sg.s <= mid && mid < sg.e && (!best || sg.clockIn > best.clockIn)) best = sg;
+    if (best) rated += (b - a) / 3600000 * best.std;
+  }
+  return Math.round(rated);
+}
+
+// ── SKU label = most recent FILPAK job (same formatting as the old inline getSku) ──
+function buildSkuLabel(j) {
+  if (!j) return "-";
+  const brandColor = [j.Part_CommercialBrand, j.Part_CommercialColor].filter(Boolean).join(" ");
+  const sizes      = [j.Part_CommercialSize1,  j.Part_CommercialSize2].filter(Boolean).join(" ");
+  const sku = [brandColor, sizes].filter(Boolean).join("<br>").replace(/X/g, "×");
+  return sku || "-";
+}
+function currentSku(records) {
+  let latest = null, latestEnd = -Infinity;
+  for (const r of records) {
+    if (r.JobOper_OpCode !== "FILPAK") continue;
+    if (!r.LaborDtl_ActiveTrans &&
+        r.LaborDtl_ClockOutTime === r.LaborDtl_ClockinTime) continue;
+    const { endMs } = recordInterval(r);
+    if (endMs > latestEnd) { latestEnd = endMs; latest = r; }
+  }
+  return buildSkuLabel(latest);
 }
 
 function formatEpicorPO(data) {
@@ -577,24 +740,20 @@ fastify.post(
       const sumRows  = (indices, col) =>
         indices.reduce((sum, i) => sum + (rows[i][col] || 0), 0);
 
-      // Fetch active Epicor jobs for all lines in parallel
-      const jobResults = await Promise.allSettled(
-        LINE_NUMS.map((line) => fetchEpicorJob(`FPBHL${line}`))
+      // Pull a 36h window of FILPAK labor rows per line in parallel, then compute
+      // rated from overlap (precedence) so a CIP/changeover-split hour scores its
+      // scheduled run time rather than a flat per-hour rate.
+      const laborResults = await Promise.allSettled(
+        LINE_NUMS.map((line) => fetchEpicorLaborWindow(`FPBHL${line}`))
       );
-      const lineJobs = {};
+      const lineLabor = {};
       LINE_NUMS.forEach((line, idx) => {
-        lineJobs[line] = jobResults[idx].status === "fulfilled" ? jobResults[idx].value : null;
+        lineLabor[line] = laborResults[idx].status === "fulfilled" ? (laborResults[idx].value ?? []) : [];
       });
 
-      const getRated = (line) => lineJobs[line]?.JobOper_ProdStandard ?? 0;
-      const getSku   = (line) => {
-        const j = lineJobs[line];
-        if (!j) return "-";
-        const brandColor = [j.Part_CommercialBrand, j.Part_CommercialColor].filter(Boolean).join(" ");
-        const sizes      = [j.Part_CommercialSize1,  j.Part_CommercialSize2].filter(Boolean).join(" ");
-        const sku = [brandColor, sizes].filter(Boolean).join("<br>").replace(/X/g, "×");
-        return sku || "-";
-      };
+      const slotStart = lastHourStartMs();                 // the just-completed hour
+      const getRated  = (line) => ratedCasesForHour(lineLabor[line], slotStart);
+      const getSku    = (line) => currentSku(lineLabor[line]);
 
       const totalRatedPerHour = LINE_NUMS.reduce((sum, line) => sum + getRated(line), 0);
 
@@ -611,6 +770,48 @@ fastify.post(
       const currentHour = parseInt(nowHour, 10);
       const lastHour = currentHour === 0 ? 23 : currentHour - 1;
       const currentSlotIndex = lastHour >= 7 ? lastHour - 7 : lastHour + 17;
+
+      // ── Persist the just-completed hour to report_data (Ignition DB) ───────────
+      // Wide, one-row-per-slot table keyed by id = slot + 1 (rows are id 1–24).
+      // Efficiency is an integer percent, NULL when rated is 0. A DB failure here
+      // must never block the report, so it is isolated in its own try/catch.
+      try {
+        const effInt = (rated, actual) =>
+          rated > 0 ? Math.round((actual / rated) * 100) : null;
+        const ratedFor  = (line) => getRated(line);
+        const actualFor = (line) => rows[currentSlotIndex][LINE_COLS[line]] || 0;
+
+        const reportDataId = currentSlotIndex + 1; // 0-based slot → 1-based id
+        const totalActual  = rows[currentSlotIndex][LINE_COLS.a] || 0;
+
+        const lineVals = LINE_NUMS.flatMap((line) => {
+          const r = ratedFor(line);
+          const a = actualFor(line);
+          return [r, a, effInt(r, a)];
+        });
+
+        await ignitionPool.query(
+          `INSERT INTO report_data
+             (id, l2_rated,l2_actual,l2_eff, l3_rated,l3_actual,l3_eff, l4_rated,l4_actual,l4_eff,
+              l5_rated,l5_actual,l5_eff, l6_rated,l6_actual,l6_eff, total_rated,total_actual,total_eff)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)
+           ON CONFLICT (id) DO UPDATE SET
+             l2_rated=EXCLUDED.l2_rated, l2_actual=EXCLUDED.l2_actual, l2_eff=EXCLUDED.l2_eff,
+             l3_rated=EXCLUDED.l3_rated, l3_actual=EXCLUDED.l3_actual, l3_eff=EXCLUDED.l3_eff,
+             l4_rated=EXCLUDED.l4_rated, l4_actual=EXCLUDED.l4_actual, l4_eff=EXCLUDED.l4_eff,
+             l5_rated=EXCLUDED.l5_rated, l5_actual=EXCLUDED.l5_actual, l5_eff=EXCLUDED.l5_eff,
+             l6_rated=EXCLUDED.l6_rated, l6_actual=EXCLUDED.l6_actual, l6_eff=EXCLUDED.l6_eff,
+             total_rated=EXCLUDED.total_rated, total_actual=EXCLUDED.total_actual, total_eff=EXCLUDED.total_eff`,
+          [
+            reportDataId,
+            ...lineVals,
+            totalRatedPerHour, totalActual, effInt(totalRatedPerHour, totalActual),
+          ]
+        );
+        console.info(`[report_data] upserted slot id ${reportDataId}`);
+      } catch (err) {
+        console.error("[report_data] upsert failed:", err);
+      }
 
       const replacements = {};
 
