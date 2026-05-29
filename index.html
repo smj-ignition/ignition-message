@@ -57,6 +57,10 @@
         color: #9c0006;
         background-color: #ffc7ce;
       }
+      .blue {
+        color: #1f4e79;
+        background-color: #ddebf7;
+      }
     </style>
   </head>
   <body>
@@ -1455,6 +1459,12 @@
         [el.id, el.id.replace("-e-", "-r-"), el.id.replace("-e-", "-a-")].forEach((id) => {
           document.getElementById(id)?.classList.add(cls);
         });
+      });
+
+      // Planned-downtime lines (no SKU) render every cell as "-"; colour those blue,
+      // including the line's SKU header cell.
+      document.querySelectorAll('td, th[id$="-sku"]').forEach((el) => {
+        if (el.textContent.trim() === "-") el.classList.add("blue");
       });
     </script>
   </body>

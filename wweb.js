@@ -813,20 +813,69 @@ fastify.post(
         console.error("[report_data] upsert failed:", err);
       }
 
+      // Read the accumulated shift back from report_data so the report shows rated/eff
+      // for every elapsed hour (not just the current slot). Indexed by slot (id - 1).
+      // On read failure we fall back to current-slot-only rendering below.
+      let dbBySlot = {};
+      try {
+        const { rows: dbRows } = await ignitionPool.query(`SELECT * FROM report_data`);
+        for (const r of dbRows) dbBySlot[r.id - 1] = r;
+      } catch (err) {
+        console.error("[report_data] read-back failed, current-slot only:", err);
+      }
+
+      // A line with no active SKU is in planned downtime — render its whole column as
+      // "-" (rated/actual/eff, every slot + totals) so the report visibly marks it as
+      // not running. The index.html colour script paints any "-" cell blue.
+      const skuByLine = {};
+      for (const line of LINE_NUMS) skuByLine[line] = getSku(line);
+      const isLineDown = (line) => line !== "a" && skuByLine[line] === "-";
+
       const replacements = {};
 
       TIME_SLOTS.forEach((slot, i) => {
-        const isCurrentSlot = i === currentSlotIndex;
+        // Only elapsed slots of this shift come from the DB; not-yet-reached slots
+        // hold the previous shift's values, so leave them blank.
+        const dbRow = i <= currentSlotIndex ? dbBySlot[i] : null;
         for (const [line, col] of Object.entries(LINE_COLS)) {
-          const rph    = isCurrentSlot ? (line === "a" ? totalRatedPerHour : getRated(Number(line))) : 0;
+          if (isLineDown(line)) {
+            replacements[`\${l-${line}-r-${slot}}`] = "-";
+            replacements[`\${l-${line}-a-${slot}}`] = "-";
+            replacements[`\${l-${line}-e-${slot}}`] = "-";
+            continue;
+          }
+
           const actual = rows[i][col] || 0;
-          replacements[`\${l-${line}-r-${slot}}`] = isCurrentSlot && rph ? rph.toLocaleString("en-TT") : "";
+          let ratedStr = "", effStr = "";
+
+          if (dbRow) {
+            const rCol = line === "a" ? "total_rated" : `l${line}_rated`;
+            const eCol = line === "a" ? "total_eff"   : `l${line}_eff`;
+            const rNum = Number(dbRow[rCol]) || 0;
+            ratedStr = rNum ? rNum.toLocaleString("en-TT") : "";
+            effStr   = rNum ? `${dbRow[eCol] ?? 0}%` : ""; // gate eff on rated → blank, never 0%
+          } else if (i === currentSlotIndex) {
+            // Fallback when the DB read-back failed: use freshly computed values.
+            const rph = line === "a" ? totalRatedPerHour : getRated(Number(line));
+            ratedStr  = rph ? rph.toLocaleString("en-TT") : "";
+            effStr    = eff(actual, rph);
+          }
+
+          replacements[`\${l-${line}-r-${slot}}`] = ratedStr;
           replacements[`\${l-${line}-a-${slot}}`] = actual.toLocaleString("en-TT");
-          replacements[`\${l-${line}-e-${slot}}`] = isCurrentSlot ? eff(actual, rph) : "";
+          replacements[`\${l-${line}-e-${slot}}`] = effStr;
         }
       });
 
       for (const [line, col] of Object.entries(LINE_COLS)) {
+        if (isLineDown(line)) {
+          for (const k of ["s1", "s2", "d"]) {
+            replacements[`\${l-${line}-r-${k}}`] = "-";
+            replacements[`\${l-${line}-a-${k}}`] = "-";
+            replacements[`\${l-${line}-e-${k}}`] = "-";
+          }
+          continue;
+        }
         const s1 = sumRows(S1_ROWS, col);
         const s2 = sumRows(S2_ROWS, col);
         replacements[`\${l-${line}-r-s1}`] = "";
