@@ -982,7 +982,14 @@ fastify.post(
 fastify.post(
   "/sendMessageToUser",
   async function handler(request, reply) {
-    const { userWhatsAppId, message, media } = request.body;
+    const { userWhatsAppId, message, media, severity } = request.body;
+
+    const emoji =
+      severity === "Danger" || severity === "danger" ? "🚨" :
+      severity === "Okay" || severity === "okay" ? "" :
+      severity === "None" || severity === "none" ? "" :
+      "";
+    const prefix = emoji ? `${emoji} ` : "";
 
     try {
       const images = [];
@@ -1002,7 +1009,7 @@ fastify.post(
       //  await client.sendMessage(userWhatsAppId, "", { media: images});
 
       // Send text message last
-      await client.sendMessage(userWhatsAppId, message);
+      await client.sendMessage(userWhatsAppId, `${prefix}${message}`);
 
       return { hello: "world" };
     } catch (err) {
